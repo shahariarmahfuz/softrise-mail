@@ -28,3 +28,7 @@ env/
 # Playwright/browser/cache
 .playwright/
 ms-playwright/
+
+.venv/
+venv/
+env/
