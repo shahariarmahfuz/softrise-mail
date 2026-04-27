@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Soft Rice Mail · Admin</title>
+
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#5f5e5e",
+                        "on-surface": "#111111",
+                        "surface": "#fcf9f8",
+                        "surface-container-low": "#f6f3f2",
+                        "outline-variant": "#e5e5e5",
+                        "error": "#9e422c",
+                        "error-container": "#fe8b70",
+                        "tertiary": "#6c5e39"
+                    },
+                    "fontFamily": {
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body data-page="admin" class="bg-surface dark:bg-neutral-950 text-on-surface dark:text-neutral-200 antialiased transition-colors duration-300">
+
+    <nav class="sticky top-0 z-30 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl border-b border-outline-variant/20 dark:border-neutral-900">
+        <div class="flex justify-between items-center px-4 md:px-6 py-2 max-w-screen-2xl mx-auto">
+            <div class="flex items-center gap-3">
+                <a href="/" class="text-neutral-700 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors p-1 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800">
+                    <i class="ph ph-arrow-left text-lg"></i>
+                </a>
+                <span class="text-lg md:text-xl font-serif font-medium tracking-tight text-neutral-900 dark:text-white">Soft Rice Mail · Admin</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="admin-user" class="text-[12px] text-neutral-500 dark:text-neutral-400"></span>
+                <button id="admin-theme-toggle" class="text-neutral-700 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800">
+                    <i id="admin-theme-icon" class="ph ph-moon text-lg md:text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div class="max-w-screen-2xl mx-auto px-4 md:px-6 flex items-center gap-1 overflow-x-auto no-scrollbar pb-1">
+            <button data-tab="overview" class="admin-tab px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary dark:bg-neutral-800 dark:text-neutral-200 border border-transparent transition-colors">Overview</button>
+            <button data-tab="users" class="admin-tab px-3 py-1 text-xs font-normal rounded-full bg-transparent text-neutral-500 border border-outline-variant/30 hover:bg-surface-container-low dark:hover:bg-neutral-800 transition-colors">Users</button>
+            <button data-tab="mailboxes" class="admin-tab px-3 py-1 text-xs font-normal rounded-full bg-transparent text-neutral-500 border border-outline-variant/30 hover:bg-surface-container-low dark:hover:bg-neutral-800 transition-colors">Mailboxes</button>
+            <button data-tab="messages" class="admin-tab px-3 py-1 text-xs font-normal rounded-full bg-transparent text-neutral-500 border border-outline-variant/30 hover:bg-surface-container-low dark:hover:bg-neutral-800 transition-colors">Messages</button>
+            <button data-tab="settings" class="admin-tab px-3 py-1 text-xs font-normal rounded-full bg-transparent text-neutral-500 border border-outline-variant/30 hover:bg-surface-container-low dark:hover:bg-neutral-800 transition-colors">Settings</button>
+            <button data-tab="audit" class="admin-tab px-3 py-1 text-xs font-normal rounded-full bg-transparent text-neutral-500 border border-outline-variant/30 hover:bg-surface-container-low dark:hover:bg-neutral-800 transition-colors">Audit logs</button>
+        </div>
+    </nav>
+
+    <main class="max-w-screen-2xl mx-auto px-4 md:px-6 py-6">
+        <section id="tab-overview" class="admin-tab-pane">
+            <div id="stats-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+        </section>
+
+        <section id="tab-users" class="admin-tab-pane hidden">
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <input id="users-search" type="text" placeholder="Search users..." class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-full py-1.5 px-4 text-xs text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary w-72"/>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-outline-variant/20 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-stone-50 dark:bg-neutral-800/40 text-[11px] uppercase tracking-wider text-neutral-500">
+                        <tr>
+                            <th class="px-3 py-2 text-left">Name</th>
+                            <th class="px-3 py-2 text-left">Username</th>
+                            <th class="px-3 py-2 text-left">Email</th>
+                            <th class="px-3 py-2 text-center">Mailboxes</th>
+                            <th class="px-3 py-2 text-center">Messages</th>
+                            <th class="px-3 py-2 text-center">Role</th>
+                            <th class="px-3 py-2 text-center">Active</th>
+                            <th class="px-3 py-2 text-center">Created</th>
+                            <th class="px-3 py-2 text-right"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody" class="divide-y divide-outline-variant/10 dark:divide-neutral-800"></tbody>
+                </table>
+            </div>
+            <div id="users-pagination" class="mt-3 flex items-center justify-end gap-2 text-xs text-neutral-500"></div>
+        </section>
+
+        <section id="tab-mailboxes" class="admin-tab-pane hidden">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <input id="mailboxes-search" type="text" placeholder="Search by email..." class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-full py-1.5 px-4 text-xs text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary w-72"/>
+                <select id="mailboxes-status" class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-full py-1.5 px-4 text-xs text-on-surface dark:text-neutral-200">
+                    <option value="">All</option>
+                    <option value="active">Active</option>
+                    <option value="deleted">Deleted</option>
+                </select>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-outline-variant/20 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-stone-50 dark:bg-neutral-800/40 text-[11px] uppercase tracking-wider text-neutral-500">
+                        <tr>
+                            <th class="px-3 py-2 text-left">Email address</th>
+                            <th class="px-3 py-2 text-left">User</th>
+                            <th class="px-3 py-2 text-center">Type</th>
+                            <th class="px-3 py-2 text-center">Status</th>
+                            <th class="px-3 py-2 text-center">Created</th>
+                            <th class="px-3 py-2 text-right"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="mailboxes-tbody" class="divide-y divide-outline-variant/10 dark:divide-neutral-800"></tbody>
+                </table>
+            </div>
+            <div id="mailboxes-pagination" class="mt-3 flex items-center justify-end gap-2 text-xs text-neutral-500"></div>
+        </section>
+
+        <section id="tab-messages" class="admin-tab-pane hidden">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+                <input id="messages-search" type="text" placeholder="Search messages..." class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-full py-1.5 px-4 text-xs text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary w-72"/>
+                <select id="messages-folder" class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-full py-1.5 px-4 text-xs text-on-surface dark:text-neutral-200">
+                    <option value="">All folders</option>
+                    <option value="inbox">Inbox</option>
+                    <option value="archive">Archive</option>
+                    <option value="trash">Trash</option>
+                </select>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-outline-variant/20 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-stone-50 dark:bg-neutral-800/40 text-[11px] uppercase tracking-wider text-neutral-500">
+                        <tr>
+                            <th class="px-3 py-2 text-left">From</th>
+                            <th class="px-3 py-2 text-left">To</th>
+                            <th class="px-3 py-2 text-left">Subject</th>
+                            <th class="px-3 py-2 text-center">Folder</th>
+                            <th class="px-3 py-2 text-center">Read</th>
+                            <th class="px-3 py-2 text-center">Star</th>
+                            <th class="px-3 py-2 text-center">Received</th>
+                            <th class="px-3 py-2 text-right">Size</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-tbody" class="divide-y divide-outline-variant/10 dark:divide-neutral-800"></tbody>
+                </table>
+            </div>
+            <div id="messages-pagination" class="mt-3 flex items-center justify-end gap-2 text-xs text-neutral-500"></div>
+        </section>
+
+        <section id="tab-settings" class="admin-tab-pane hidden">
+            <div class="rounded-xl border border-outline-variant/20 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5">
+                <h2 class="text-base font-serif font-semibold mb-4">System settings</h2>
+                <form id="admin-settings-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></form>
+                <p id="admin-settings-status" class="hidden text-[12px] mt-3"></p>
+            </div>
+        </section>
+
+        <section id="tab-audit" class="admin-tab-pane hidden">
+            <div class="overflow-x-auto rounded-xl border border-outline-variant/20 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-stone-50 dark:bg-neutral-800/40 text-[11px] uppercase tracking-wider text-neutral-500">
+                        <tr>
+                            <th class="px-3 py-2 text-left">When</th>
+                            <th class="px-3 py-2 text-left">Action</th>
+                            <th class="px-3 py-2 text-left">User</th>
+                            <th class="px-3 py-2 text-left">Metadata</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-tbody" class="divide-y divide-outline-variant/10 dark:divide-neutral-800"></tbody>
+                </table>
+            </div>
+            <div id="audit-pagination" class="mt-3 flex items-center justify-end gap-2 text-xs text-neutral-500"></div>
+        </section>
+    </main>
+
+    <div id="admin-toast-stack" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="/static/admin.js" defer></script>
+</body>
+</html>

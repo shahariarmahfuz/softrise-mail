@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <title>Create account · Soft Rice Mail</title>
+
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#5f5e5e",
+                        "on-surface": "#111111",
+                        "surface": "#fcf9f8",
+                        "surface-container-low": "#f6f3f2",
+                        "outline-variant": "#e5e5e5",
+                        "error": "#9e422c",
+                        "error-container": "#fe8b70",
+                        "tertiary": "#6c5e39"
+                    },
+                    "fontFamily": {
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body data-page="register" class="bg-surface dark:bg-neutral-950 text-on-surface dark:text-neutral-200 antialiased transition-colors duration-300">
+
+    <main class="min-h-dvh w-full flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md">
+
+            <div class="flex items-center justify-between mb-6">
+                <a href="/" class="flex items-center gap-2.5 text-neutral-900 dark:text-white">
+                    <span class="text-xl font-serif font-medium tracking-tight">Soft Rice Mail</span>
+                </a>
+                <button id="theme-toggle" class="text-neutral-700 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors cursor-pointer flex items-center p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800">
+                    <i id="theme-icon" class="ph ph-moon text-lg"></i>
+                </button>
+            </div>
+
+            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-xl border border-outline-variant/20 dark:border-neutral-800">
+                <div class="mb-5">
+                    <h1 class="text-xl font-serif font-semibold text-neutral-900 dark:text-white">Create your account</h1>
+                    <p class="text-[13px] text-neutral-500 dark:text-neutral-400 mt-1">Pick a username — we'll set up your @softrise.app inbox automatically.</p>
+                </div>
+
+                <form id="register-form" class="flex flex-col gap-3" autocomplete="on" novalidate>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-[12px] text-neutral-500 dark:text-neutral-400">Display name <span class="text-neutral-400">(optional)</span></span>
+                        <input type="text" name="name" maxlength="100" autocomplete="name" class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-lg py-2 px-3 text-sm text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary"/>
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-[12px] text-neutral-500 dark:text-neutral-400">Username <span class="text-neutral-400">(letters / digits / dot / dash / underscore)</span></span>
+                        <input type="text" name="username" required minlength="3" maxlength="50" autocomplete="username" autofocus pattern="[A-Za-z0-9._-]+" class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-lg py-2 px-3 text-sm text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary"/>
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-[12px] text-neutral-500 dark:text-neutral-400">Email <span class="text-neutral-400">(optional)</span></span>
+                        <input type="email" name="email" maxlength="200" autocomplete="email" class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-lg py-2 px-3 text-sm text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary"/>
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-[12px] text-neutral-500 dark:text-neutral-400">Password <span class="text-neutral-400">(min 6 characters)</span></span>
+                        <input type="password" name="password" required minlength="6" maxlength="128" autocomplete="new-password" class="bg-stone-100 dark:bg-neutral-800 border border-outline-variant/20 dark:border-neutral-700 rounded-lg py-2 px-3 text-sm text-on-surface dark:text-neutral-200 focus:ring-0 focus:border-primary"/>
+                    </label>
+                    <p id="auth-error" class="hidden text-[12px] text-error dark:text-red-400 mt-1"></p>
+                    <button id="auth-submit" type="submit" class="mt-2 w-full py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-[#4a4949] transition-colors shadow-sm">Create account</button>
+                </form>
+
+                <div class="mt-5 text-center text-[13px] text-neutral-500 dark:text-neutral-400">
+                    Already have an account?
+                    <a href="/login" class="font-medium text-primary dark:text-neutral-200 hover:underline">Sign in</a>
+                </div>
+            </div>
+
+            <p class="mt-6 text-center text-[12px] text-neutral-400 dark:text-neutral-500">© 2026 Soft Rice Mail</p>
+        </div>
+    </main>
+
+    <div id="toast-stack" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="/static/auth.js?v=20260427_forcefix" defer></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <title>Message · Soft Rice Mail</title>
+
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#5f5e5e",
+                        "on-surface": "#111111",
+                        "surface": "#fcf9f8",
+                        "surface-container-low": "#f6f3f2",
+                        "outline-variant": "#e5e5e5",
+                        "error": "#9e422c",
+                        "error-container": "#fe8b70",
+                        "tertiary": "#6c5e39"
+                    },
+                    "fontFamily": {
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Long subject / sender / recipient strings should never push the
+           viewport sideways on phones. */
+        .msg-wrap { overflow-wrap: anywhere; word-break: break-word; }
+
+        .message-page,
+        .message-container,
+        .email-detail {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        #messageBody {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        #messageBody * {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+        }
+
+        #messageBody img {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block;
+        }
+
+        #messageBody table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse;
+        }
+
+        #messageBody td,
+        #messageBody th {
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+            max-width: 100% !important;
+        }
+
+        #messageBody pre,
+        #messageBody code {
+            white-space: pre-wrap !important;
+            overflow-wrap: anywhere !important;
+            max-width: 100% !important;
+        }
+
+        .email-scale-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .email-scale-inner {
+            transform-origin: top left;
+        }
+
+        @media (max-width: 768px) {
+            .msg-toolbar-icon { width: 40px; height: 40px; }
+            html, body {
+                overflow-x: hidden !important;
+            }
+            .message-page,
+            .message-container,
+            .email-detail,
+            #messageBody {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+            #messageBody {
+                font-size: 14px;
+                line-height: 1.45;
+            }
+            .msg-meta-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+        }
+    </style>
+</head>
+<body data-page="message" class="bg-surface dark:bg-neutral-950 text-on-surface dark:text-neutral-200 antialiased transition-colors duration-300">
+
+    <!-- Top app bar (matches the main app navbar style) -->
+    <nav class="sticky top-0 w-full z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl shadow-sm dark:shadow-none border-b border-transparent dark:border-neutral-900">
+        <div class="flex items-center px-3 md:px-5 py-1.5 w-full max-w-screen-xl mx-auto gap-2">
+            <button id="messageBackBtn" class="msg-toolbar-icon relative flex items-center justify-center text-neutral-700 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800" aria-label="Back" title="Back">
+                <span id="back-btn" class="absolute inset-0 rounded-full"></span>
+                <i class="ph ph-arrow-left text-xl"></i>
+            </button>
+            <span class="text-base md:text-lg font-serif font-medium tracking-tight text-neutral-900 dark:text-white truncate flex-1 min-w-0">Soft Rice Mail</span>
+
+            <div class="flex items-center gap-1 shrink-0">
+                <button id="messageStarBtn" class="msg-toolbar-icon relative flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-tertiary dark:hover:text-yellow-400 transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800" title="Star" aria-label="Star">
+                    <span id="message-star" class="absolute inset-0 rounded-full"></span>
+                    <i class="ph ph-star text-xl"></i>
+                </button>
+                <button id="messageArchiveBtn" class="msg-toolbar-icon relative flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800" title="Archive" aria-label="Archive">
+                    <span id="message-archive" class="absolute inset-0 rounded-full"></span>
+                    <i class="ph ph-archive text-xl"></i>
+                </button>
+                <button id="messageTrashBtn" class="msg-toolbar-icon relative flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-error dark:hover:text-red-400 transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800" title="Move to trash" aria-label="Trash">
+                    <span id="message-trash" class="absolute inset-0 rounded-full"></span>
+                    <i class="ph ph-trash text-xl"></i>
+                </button>
+                <button id="message-toggle-read" class="msg-toolbar-icon flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800" title="Mark as unread" aria-label="Toggle read">
+                    <i class="ph ph-envelope-simple text-xl"></i>
+                </button>
+
+                <button id="theme-toggle" class="msg-toolbar-icon flex items-center justify-center text-neutral-700 dark:text-neutral-300 hover:text-primary dark:hover:text-white transition-colors p-1.5 rounded-full hover:bg-surface-container-low dark:hover:bg-neutral-800" title="Toggle theme" aria-label="Theme">
+                    <i id="theme-icon" class="ph ph-moon text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="message-page w-full max-w-screen-xl mx-auto px-3 md:px-5 py-4 md:py-6">
+
+        <!-- Loading state -->
+        <section id="message-loading" class="py-16 text-center text-neutral-500 dark:text-neutral-400">
+            <i class="ph ph-spinner-gap animate-spin text-4xl block mb-3"></i>
+            <p class="text-sm">Loading message…</p>
+        </section>
+
+        <!-- Not-found / error state -->
+        <section id="message-error" class="hidden py-16 text-center text-neutral-500 dark:text-neutral-400">
+            <i class="ph ph-warning-circle text-4xl block mb-3 text-neutral-300 dark:text-neutral-600"></i>
+            <p id="message-error-title" class="text-sm font-medium text-neutral-700 dark:text-neutral-200">Message not found.</p>
+            <p id="message-error-detail" class="text-[13px] mt-1"></p>
+            <a href="/" class="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full bg-primary text-white text-xs font-medium hover:bg-[#4a4949] transition-colors">
+                <i class="ph ph-arrow-left"></i> Back to inbox
+            </a>
+        </section>
+
+        <!-- Message content -->
+        <article id="message-content" aria-hidden="true" class="message-container email-detail absolute -z-10 opacity-0 pointer-events-none bg-white dark:bg-[#0a0a0a] border border-outline-variant/20 dark:border-neutral-800 rounded-2xl overflow-hidden">
+
+            <header class="px-4 sm:px-6 py-4 border-b border-outline-variant/20 dark:border-neutral-800">
+                <h1 id="messageSubject" class="msg-wrap text-lg sm:text-xl font-serif font-semibold text-neutral-900 dark:text-white leading-snug">Subject</h1>
+            </header>
+
+            <div class="px-4 sm:px-6 py-4 border-b border-outline-variant/10 dark:border-neutral-800 flex flex-col gap-2 text-[12px] sm:text-[13px] text-neutral-500 dark:text-neutral-400">
+                <div class="msg-meta-row flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="font-medium text-neutral-700 dark:text-neutral-300 shrink-0">From</span>
+                    <span id="messageFrom" class="msg-wrap min-w-0 flex-1"></span>
+                </div>
+                <div class="msg-meta-row flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="font-medium text-neutral-700 dark:text-neutral-300 shrink-0">To</span>
+                    <span id="messageTo" class="msg-wrap min-w-0 flex-1"></span>
+                </div>
+                <div class="msg-meta-row flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="font-medium text-neutral-700 dark:text-neutral-300 shrink-0">Date</span>
+                    <span id="messageDate" class="msg-wrap min-w-0 flex-1"></span>
+                </div>
+                <div id="messageAttachmentsRow" class="hidden msg-meta-row flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="font-medium text-neutral-700 dark:text-neutral-300 shrink-0">Attachments</span>
+                    <span id="messageAttachments" class="flex flex-wrap gap-1.5 min-w-0 flex-1"></span>
+                </div>
+            </div>
+
+            <div id="messageBody" class="message-body email-body px-4 sm:px-6 py-5 text-[14px] sm:text-[15px] leading-relaxed text-neutral-800 dark:text-neutral-200"></div>
+        </article>
+
+    </main>
+
+    <!-- Toast container -->
+    <div id="toast-stack" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[120] flex flex-col gap-2 pointer-events-none px-4 max-w-full"></div>
+
+    <script src="/static/message.js?v=20260427_bodyfix1" defer></script>
+</body>
+</html>

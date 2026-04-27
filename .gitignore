@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+venv/
+.env
+.env.*
+!.env.example
+*.log
+logs/
+storage/
+uploads/
+attachments/
+node_modules/
+.cache/
+.pytest_cache/
+.DS_Store
+.vscode/
+.idea/
+test-results/
+playwright-report/
+screenshots/
+videos/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Playwright/browser/cache
+.playwright/
+ms-playwright/
